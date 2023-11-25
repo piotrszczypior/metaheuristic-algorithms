@@ -12,4 +12,4 @@ add_executable(meta-heuristic-algorithms
         src/graph/Graph.h
         src/file-writer/FileWriter.h
         src/file-writer/FileWriter.cpp
-        src/file-reader/FileReader.h src/file-reader/FileReader.cpp)
+        src/file-reader/FileReader.h src/file-reader/FileReader.cpp src/menu/Menu.cpp src/menu/Utils.h src/menu/Utils.cpp)
