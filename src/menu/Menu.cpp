@@ -97,6 +97,7 @@ void menu::create_menu() {
             case 10: {
                 cout << "Quitting application..." << endl;
                 delete graph;
+                exit(0);
             }
             default: {
                 break;

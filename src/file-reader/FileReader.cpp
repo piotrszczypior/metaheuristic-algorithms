@@ -47,7 +47,6 @@ T *FileReader::read_problem_from_tsp_file(std::string file_path) {
         std::istringstream string_stream(line);
         std::string token;
         string_stream >> token;
-        cout << line << endl;
 
         if (token == "EOF") {
             break;

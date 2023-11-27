@@ -12,4 +12,13 @@ add_executable(meta-heuristic-algorithms
         src/graph/Graph.h
         src/file-writer/FileWriter.h
         src/file-writer/FileWriter.cpp
-        src/file-reader/FileReader.h src/file-reader/FileReader.cpp src/menu/Menu.cpp src/menu/Utils.h src/menu/Utils.cpp)
+        src/file-reader/FileReader.h
+        src/file-reader/FileReader.cpp
+        src/menu/Menu.cpp
+        src/menu/Utils.h
+        src/menu/Utils.cpp
+        src/algorithms/tabu-search/TabuSearch.h
+        src/algorithms/tabu-search/TabuSearch.cpp
+        src/algorithms/simulated-annealing/SimulatedAnnealing.h
+        src/algorithms/simulated-annealing/SimulatedAnnealing.cpp
+        src/algorithms/tabu-search/TabuSearchResultTO.h)
