@@ -9,7 +9,11 @@ using namespace std;
 class TabuSearchResultTO {
 
 public:
-    TabuSearchResultTO(const vector<int> &bestPath, int bestCost) : best_path(bestPath), best_cost(bestCost) {}
+    TabuSearchResultTO(int greedyCost, const vector<int> &greedySolution, int bestCost, const vector<int> &bestPath)
+            : greedy_cost(greedyCost), greedy_solution(greedySolution), best_cost(bestCost), best_path(bestPath) {}
+
+    int greedy_cost;
+    vector<int> greedy_solution;
 
     int best_cost;
     vector<int> best_path;

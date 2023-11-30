@@ -17,8 +17,12 @@ add_executable(meta-heuristic-algorithms
         src/menu/Menu.cpp
         src/menu/Utils.h
         src/menu/Utils.cpp
-        src/algorithms/tabu-search/TabuSearch.h
-        src/algorithms/tabu-search/TabuSearch.cpp
+        src/algorithms/tabuSearch/TabuSearch.h
+        src/algorithms/tabuSearch/TabuSearch.cpp
         src/algorithms/simulated-annealing/SimulatedAnnealing.h
         src/algorithms/simulated-annealing/SimulatedAnnealing.cpp
-        src/algorithms/tabu-search/TabuSearchResultTO.h)
+        src/algorithms/tabuSearch/TabuSearchResultTO.h
+        src/algorithms/simulated-annealing/SimulatedAnnealingResultTO.h
+        src/algorithms/nearestNeighbour/NearestNeighbour.cpp
+        src/algorithms/nearestNeighbour/NearestNeighbour.h
+)
