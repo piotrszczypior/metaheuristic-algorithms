@@ -16,6 +16,8 @@ public:
 
     explicit Graph(int city_number);
 
+    explicit Graph(const vector<vector<int>> &graph);
+
     void add_new_connection(int from, int to, int cost);
 
     vector<int> &get_adjacent_cities(int city);

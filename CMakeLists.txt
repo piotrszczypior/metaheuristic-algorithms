@@ -24,5 +24,4 @@ add_executable(meta-heuristic-algorithms
         src/algorithms/tabuSearch/TabuSearchResultTO.h
         src/algorithms/simulated-annealing/SimulatedAnnealingResultTO.h
         src/algorithms/nearestNeighbour/NearestNeighbour.cpp
-        src/algorithms/nearestNeighbour/NearestNeighbour.h
-)
+        src/algorithms/nearestNeighbour/NearestNeighbour.h)

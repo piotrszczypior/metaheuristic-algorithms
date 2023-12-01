@@ -2,11 +2,9 @@
 #include <sstream>
 #include "FileReader.h"
 #include "../graph/Graph.h"
-//#include "tinyxml2.h"
 #include <vector>
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <regex>
 
 
@@ -79,40 +77,30 @@ T *FileReader::read_problem_from_xml_file(std::string file_path) {
     // TODO:
     std::ifstream file(file_path);
     std::string line;
-    std::regex edge_pattern(R"(<edge cost="([0-9.e+]+)\">([0-9]+)<\/edge>)");
+    std::regex edge_pattern(R"(<edge cost="([0-9.e+0-9]+)\">([0-9]+)<\/edge>)");
     std::smatch matches;
-    int vertexIndex = 0;
+    int vertex_index = 0;
 
     if (!file.is_open()) {
-        std::cerr << "Nie można otworzyć pliku XML: " << file_path << std::endl;
+        std::cerr << "There was a problem with xml file: " << file_path << std::endl;
         return nullptr;
     }
-    vector<vector<int>> graph;
+    vector<vector<int>> matrix;
+    bool is_first_run = true;
     while (getline(file, line)) {
         if (line.find("<vertex>") != std::string::npos) {
-            // Nowy wierzchołek
-            vertexIndex++;
+            matrix.push_back(vector<int>());
+            if (!is_first_run) {
+                vertex_index++;
+            }
+            is_first_run = false;
         } else if (std::regex_search(line, matches, edge_pattern) && matches.size() == 3) {
-            // Znaleziono krawędź
-            int targetVertex = std::stoi(matches[2]);
-            double cost = std::stod(matches[1]);
-            graph[vertexIndex][targetVertex] = static_cast<int>(cost);
+            auto cost = std::stod(matches[1]);
+            matrix[vertex_index].push_back(static_cast<int>(cost));
         }
     }
-    return nullptr;
+    return new Graph(matrix);
 }
-
-std::vector<std::string> FileReader::split(std::string string_to_split, char separator) {
-    std::vector<std::string> result;
-    std::stringstream ss(string_to_split);
-    std::string item;
-
-    while (getline(ss, item, separator)) {
-        result.push_back(item);
-    }
-    return result;
-}
-
 
 template Graph *FileReader::read_problem_from_txt_file<Graph>(std::string file_path);
 
