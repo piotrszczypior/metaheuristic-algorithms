@@ -2,6 +2,13 @@
 #include <sstream>
 #include "FileReader.h"
 #include "../graph/Graph.h"
+//#include "tinyxml2.h"
+#include <vector>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <regex>
+
 
 template<class T>
 T *FileReader::read_problem_from_txt_file(std::string file_path) {
@@ -69,6 +76,29 @@ T *FileReader::read_problem_from_tsp_file(std::string file_path) {
 
 template<class T>
 T *FileReader::read_problem_from_xml_file(std::string file_path) {
+    // TODO:
+    std::ifstream file(file_path);
+    std::string line;
+    std::regex edge_pattern(R"(<edge cost="([0-9.e+]+)\">([0-9]+)<\/edge>)");
+    std::smatch matches;
+    int vertexIndex = 0;
+
+    if (!file.is_open()) {
+        std::cerr << "Nie można otworzyć pliku XML: " << file_path << std::endl;
+        return nullptr;
+    }
+    vector<vector<int>> graph;
+    while (getline(file, line)) {
+        if (line.find("<vertex>") != std::string::npos) {
+            // Nowy wierzchołek
+            vertexIndex++;
+        } else if (std::regex_search(line, matches, edge_pattern) && matches.size() == 3) {
+            // Znaleziono krawędź
+            int targetVertex = std::stoi(matches[2]);
+            double cost = std::stod(matches[1]);
+            graph[vertexIndex][targetVertex] = static_cast<int>(cost);
+        }
+    }
     return nullptr;
 }
 
