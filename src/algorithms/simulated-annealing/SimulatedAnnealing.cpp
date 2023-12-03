@@ -9,7 +9,6 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, d
     NearestNeighbour nearestNeighbour = {};
     auto nearestNeighbourSolution = nearestNeighbour.find_solution(graph);
     auto best_cost = nearestNeighbourSolution.first;
-    cout << best_cost << endl;
     auto best_path = nearestNeighbourSolution.second;
     auto current_path = best_path;
     problem_size = best_path.size();
@@ -32,12 +31,12 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, d
         temperature *= COOLING_RATE;
     }
 
-    cout << "Move insert: " << move_insert << endl;
-    cout << "Move swap: " << move_swap << endl;
-    cout << "Move inverse: " << move_inverse << endl;
-
-    cout << "value of expression: " << exp(-1/temperature) << endl;
-    cout << "Temperature: " << temperature << endl;
+//    cout << "Move insert: " << move_insert << endl;
+//    cout << "Move swap: " << move_swap << endl;
+//    cout << "Move inverse: " << move_inverse << endl;
+//
+//    cout << "value of expression: " << exp(-1/temperature) << endl;
+//    cout << "Temperature: " << temperature << endl;
 
     return {best_path, best_cost};
 }
