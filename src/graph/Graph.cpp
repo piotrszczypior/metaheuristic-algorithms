@@ -48,4 +48,6 @@ int Graph::get_edge_cost_if_exists(int from_city, int to_city) {
     return adjacent_cities[to_city];
 }
 
-Graph::Graph(const vector<vector<int>> &graph) : graph(graph) {}
+Graph::Graph(const vector<vector<int>> &graph) : graph(graph) {
+    city_number = graph.size();
+}

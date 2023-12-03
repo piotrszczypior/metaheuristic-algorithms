@@ -14,14 +14,12 @@ private:
     int TABU_MAX_SIZE;
     int MAX_ITERATIONS_WITHOUT_IMPROVEMENT;
     vector<vector<int>> graph;
-    int **tabu_list;
     vector<vector<int>> long_term_memory;
-    pair<int, vector<int>> find_solution_using_nearest_neighbour();
 
 public:
     TabuSearch(Graph *graph, int max_tabu_size);
 
-    TabuSearchResultTO process(int time_stop_criterion);
+    TabuSearchResultTO process(int time_stop_criteria);
 
     int calculate_path_cost(vector<int> solution);
 

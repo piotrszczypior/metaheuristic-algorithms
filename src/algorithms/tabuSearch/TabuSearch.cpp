@@ -9,10 +9,7 @@ TabuSearch::TabuSearch(Graph *graph, int max_tabu_size) {
     TABU_MAX_SIZE = max_tabu_size;
 }
 
-TabuSearchResultTO TabuSearch::process(int time_stop_criterion) {
-    auto start_time = std::chrono::high_resolution_clock::now();
-    std::chrono::seconds duration(time_stop_criterion);
-
+TabuSearchResultTO TabuSearch::process(int time_stop_criteria) {
     vector<vector<int>> tabu_list;
     MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.35);
     int iterations_without_improvement = 0;
@@ -26,6 +23,8 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criterion) {
 
     vector<int> best_neighbour = current_best_path;
 
+    auto start_time = std::chrono::high_resolution_clock::now();
+    std::chrono::seconds duration(time_stop_criteria);
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
         vector<vector<int>> neighbourhood_solutions = get_insertion_neighbourhood(best_neighbour);
         if (iterations_without_improvement == 5) {
@@ -73,7 +72,7 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criterion) {
 
 int TabuSearch::calculate_path_cost(vector<int> solution) {
     int cost = 0;
-    for (int i = 0; i < graph.size() - 1; ++i) {
+    for (int i = 0; i < solution.size() - 1; ++i) {
         cost += graph[solution[i]][solution[i + 1]];
     }
 
