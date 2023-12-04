@@ -115,6 +115,6 @@ data = [
     ("SimulatedAnnealing", "0.19", "10"),
 ]
 
-csv_file_path = 'SA.csv'
+csv_file_path = 'SA_rbg358.csv'
 
 run_exe_and_save_output()
