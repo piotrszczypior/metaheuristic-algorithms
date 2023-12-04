@@ -17,17 +17,20 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, d
     std::chrono::seconds duration(time_stop_criteria);
 
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
-        auto neighbour = get_neighbours(current_path);
-        auto neighbour_cost = calculate_path_cost(neighbour);
+        for (int i = 0; i < 1000; ++i) {
+            auto neighbour = get_neighbours(current_path);
+            auto neighbour_cost = calculate_path_cost(neighbour);
 
-        if (accept_move(best_cost, neighbour_cost, temperature)) {
-            current_path = neighbour;
+            if (accept_move(best_cost, neighbour_cost, temperature)) {
+                current_path = neighbour;
 
-            if (neighbour_cost < best_cost) {
-                best_path = neighbour;
-                best_cost = neighbour_cost;
+                if (neighbour_cost < best_cost) {
+                    best_path = neighbour;
+                    best_cost = neighbour_cost;
+                }
             }
         }
+
         temperature *= COOLING_RATE;
     }
 
@@ -95,7 +98,7 @@ void SimulatedAnnealing::make_swap_route_parts_move(vector<int> &neighbour) {
     auto new_size = neighbour.size();
     auto new_position_of_route_part = random_int(1, new_size - 1);
 
-    for (auto city : sub_route) {
+    for (auto city: sub_route) {
         neighbour.insert(neighbour.begin() + new_position_of_route_part++, city);
     }
 }
