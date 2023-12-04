@@ -10,11 +10,12 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     FileReader filereader = FileReader();
-    auto graph_xml = filereader.read_problem_from_tsp_file<Graph>(R"(C:\Users\Zosia\Desktop\metaheuristic-algorithms\src\rbg358.atsp)");
+    auto graph_xml = filereader.read_problem_from_tsp_file<Graph>(R"(src\ftv170.atsp)");
 
 
     SimulatedAnnealing simulatedAnnealing = {graph_xml, stod(argv[1])};
-    auto result = simulatedAnnealing.process(60 * 6, stod(argv[2]));
+    double  temperature = 358 * 0.20;
+    auto result = simulatedAnnealing.process(60 * 6, temperature);
     cout << result.best_cost << endl;
     return 0;
 }
