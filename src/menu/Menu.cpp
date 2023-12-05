@@ -3,6 +3,8 @@
 #include "../graph/Graph.h"
 #include "Utils.h"
 #include "../file-writer/FileWriter.h"
+#include "../algorithms/simulated-annealing/SimulatedAnnealing.h"
+#include "../algorithms/tabuSearch/TabuSearch.h"
 #include <iostream>
 
 using namespace std;
@@ -13,6 +15,12 @@ void menu::create_menu() {
     Graph *graph = nullptr;
     FileReader fileReader;
     FileWriter fileWriter;
+
+    vector<int> solution;
+
+    string neighbourhood;
+    double temperature_coefficient;
+
     string buffer;
 
     while (true) {
@@ -49,11 +57,36 @@ void menu::create_menu() {
                 stopping_condition = utils::get_input();
             }
             case 4: {
-                // TODO: choose neighbourhood
+                cout << "Choose neighbourhood: " << endl;
+                cout << "1. Swap   neighbourhood" << endl;
+                cout << "2. Insert neighbourhood" << endl;
+                cout << "3. Invert neighbourhood" << endl;
+                cout << "Choice: ";
+                int neighbourhood_choice = utils::get_input();
+
+                switch (neighbourhood_choice) {
+                    case 1: {
+                        neighbourhood = "swap";
+                        break;
+                    }
+                    case 2: {
+                        neighbourhood = "insert";
+                        break;
+                    }
+                    case 3: {
+                        neighbourhood = "invert";
+                        break;
+                    }
+                    default: {
+                        neighbourhood = "";
+                    }
+                }
                 break;
             }
             case 5: {
-                // TODO: choose coefficient of temperature change
+                cout << "Enter coefficient of temperature (should be between 0.0 - 1.0): ";
+                cin >> buffer;
+                temperature_coefficient = stod(buffer);
                 break;
             }
             case 6: {
@@ -63,9 +96,12 @@ void menu::create_menu() {
                     break;
                 }
                 cout << "Algorithm - Tabu Search" << endl;
-                // TODO: implementation
-
+                TabuSearch tabuSearch = {graph, 3 * 170};
+                auto result = tabuSearch.process(stopping_condition);
+                solution = result.best_path;
                 cout << "Algorithm results: " << endl;
+                print_result(result.greedy_cost, result.best_cost, result.best_path);
+
                 utils::press_key_to_continue();
                 break;
             }
@@ -76,18 +112,17 @@ void menu::create_menu() {
                     break;
                 }
                 cout << "Algorithm - Simulated Annealing" << endl;
-                // TODO: implementation
-
-                cout << "Algorithm results: " << endl;
+                SimulatedAnnealing simulatedAnnealing = {graph, temperature_coefficient};
+                auto result = simulatedAnnealing.process(stopping_condition, 1000);
+                solution = result.best_path;
+                print_result(0, result.best_cost, result.best_path);
                 utils::press_key_to_continue();
                 break;
             }
             case 8: {
                 cout << "Enter file name: ";
                 cin >> buffer;
-                // TODO - parse result to string
-                fileWriter.write_to_file(buffer, "TODO - result");
-                cout << "Saving solution to "<< buffer << " .txt file" << endl;
+                FileWriter::write_to_file(buffer, solution);
                 break;
             }
             case 9: {
@@ -122,4 +157,15 @@ void menu::print_options() {
     cout << "9. Read solution from file" << std::endl;
     cout << "10. Exit" << std::endl;
     cout << "Choose: ";
+}
+
+void menu::print_result(int greedy_result, int algorithm_result, const vector<int>& path) {
+    cout << "----results----" << endl;
+    cout << "Greedy result: " << greedy_result << endl;
+    cout << "Final result: " << algorithm_result << endl;
+    cout << "Path: ";
+    for (auto city: path) {
+        cout << city << " ";
+    }
+    cout << endl;
 }

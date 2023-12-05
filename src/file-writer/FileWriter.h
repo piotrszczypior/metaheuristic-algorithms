@@ -4,13 +4,13 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 class FileWriter {
 
 public:
-    void write_to_file(std::string file_name, std::string value);
+    static void write_to_file(std::string file_name, const std::vector<int> &path);
 };
-
 
 
 #endif //LIST_FILEWRITER_H

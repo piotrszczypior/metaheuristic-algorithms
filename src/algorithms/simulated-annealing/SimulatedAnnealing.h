@@ -20,11 +20,6 @@ private:
 
     int random_int(int minimum, int maximum);
 
-public:
-    SimulatedAnnealing(Graph *graph, double cooling_rate);
-
-    SimulatedAnnealingResultTO process(int time_stop_criteria, double temperature);
-
     vector<int> get_neighbours(vector<int> solution);
 
     void make_swap_cities_move(vector<int> &neighbour);
@@ -35,9 +30,19 @@ public:
 
     bool accept_move(int current_best_cost, int neighbour_cost, double temperature);
 
-    int calculate_path_cost(const vector<int>& solution);
+    int calculate_path_cost(const vector<int> &solution);
 
     void make_swap_route_parts_move(vector<int> &neighbour);
+
+    double calculate_initial_temperature();
+
+public:
+
+    SimulatedAnnealing(Graph *graph, double cooling_rate);
+
+    SimulatedAnnealingResultTO process(int time_stop_criteria, double temperature);
+
+    vector<int> generate_random_solution();
 };
 
 

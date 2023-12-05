@@ -1,8 +1,12 @@
 #include <chrono>
 #include <random>
+#include <map>
+#include <list>
 #include "TabuSearch.h"
 #include "TabuSearchResultTO.h"
 #include "../nearestNeighbour/NearestNeighbour.h"
+
+using Edge = std::pair<int, int>;
 
 TabuSearch::TabuSearch(Graph *graph, int max_tabu_size) {
     this->graph = graph->get_graph_as_vector();
@@ -11,7 +15,10 @@ TabuSearch::TabuSearch(Graph *graph, int max_tabu_size) {
 
 TabuSearchResultTO TabuSearch::process(int time_stop_criteria) {
     vector<vector<int>> tabu_list;
-    MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.35);
+//    std::list<Edge> tabu_list;
+    MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.3);
+    int hard_reset_max_iteration = 0;
+
     int iterations_without_improvement = 0;
 
     // find greedy_solution using greedy algorithm
@@ -23,13 +30,14 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria) {
 
     vector<int> best_neighbour = current_best_path;
 
+    auto opt = two_opt_improvement(best_neighbour);
+    cout << "greed: " << current_best_cost << endl;
+    cout << "opt: " << calculate_path_cost(opt) << endl;
+
     auto start_time = std::chrono::high_resolution_clock::now();
     std::chrono::seconds duration(time_stop_criteria);
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
-        vector<vector<int>> neighbourhood_solutions = get_insertion_neighbourhood(best_neighbour);
-        if (iterations_without_improvement == 5) {
-            neighbourhood_solutions = get_inversion_neighbourhood(best_neighbour);
-        }
+        vector<vector<int>> neighbourhood_solutions = get_neighbourhood_solutions(best_neighbour);
 
         int best_neighbour_cost = numeric_limits<int>::max();
         // get candidate neighbours excluding tabu
@@ -53,11 +61,18 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria) {
             iterations_without_improvement = 0;
         } else {
             iterations_without_improvement++;
+            hard_reset_max_iteration++;
         }
 
         if (iterations_without_improvement >= MAX_ITERATIONS_WITHOUT_IMPROVEMENT) {
             best_neighbour = diversify_solution(best_neighbour);
             iterations_without_improvement = 0;
+        }
+
+        if (hard_reset_max_iteration >= 500) {
+            cout << "hard" << endl;
+            best_neighbour = hard_reset(best_neighbour);
+            hard_reset_max_iteration = 0;
         }
 
         // update Tabu list
@@ -75,23 +90,7 @@ int TabuSearch::calculate_path_cost(vector<int> solution) {
     for (int i = 0; i < solution.size() - 1; ++i) {
         cost += graph[solution[i]][solution[i + 1]];
     }
-
     return cost;
-}
-
-vector<vector<int>> TabuSearch::get_neighbourhood_solutions(vector<int> solution) {
-    vector<vector<int>> neighbors;
-    int number_of_swaps = random_int(1, int(solution.size() * 0.3));
-
-    for (int i = 0; i < number_of_swaps; ++i) {
-        size_t index_i = random_int(1, solution.size() - 2);
-        size_t index_j = random_int(1, solution.size() - 2);
-
-        vector<int> neighbor = solution;
-        swap(neighbor[index_i], neighbor[index_j]);
-        neighbors.push_back(neighbor);
-    }
-    return neighbors;
 }
 
 size_t TabuSearch::random_int(int minimum, int maximum) {
@@ -101,22 +100,37 @@ size_t TabuSearch::random_int(int minimum, int maximum) {
     return random_index_distribution(generator);
 }
 
-vector<vector<int>> TabuSearch::get_inversion_neighbourhood(vector<int> solution) {
-    vector<vector<int>> neighbours;
-    for (size_t i = 1; i < solution.size() - 1; ++i) {
-        for (size_t j = i + 1; j < solution.size() - 1; ++j) {
-            vector<int> neighbour = solution;
-            reverse(neighbour.begin() + i, neighbour.begin() + j);
-            neighbours.push_back(neighbour);
+vector<vector<int>> TabuSearch::get_neighbourhood_solutions(const vector<int> &solution) {
+    int number_of_cities = int(solution.size());
+    vector<vector<int>> neighbors;
+    for (int i = 1; i < number_of_cities - 1; ++i) {
+        for (int j = 1; j < number_of_cities - 1; ++j) {
+            if (i != j) {
+                vector<int> neighbor = solution;
+                swap(neighbor[i], neighbor[j]);
+                neighbors.push_back(neighbor);
+            }
         }
     }
-    return neighbours;
+    return neighbors;
 }
 
-vector<vector<int>> TabuSearch::get_insertion_neighbourhood(vector<int> solution) {
+//vector<vector<int>> TabuSearch::get_inversion_neighbourhood(vector<int> solution) {
+//    vector<vector<int>> neighbours;
+//    for (int i = 1; i < solution.size() - 2; ++i) {
+//        for (int j = i + 1; j < solution.size() - 1; ++j) {
+//            vector<int> neighbour = solution;
+//            reverse(neighbour.begin() + i, neighbour.begin() + j);
+//            neighbours.push_back(neighbour);
+//        }
+//    }
+//    return neighbours;
+//}
+//
+vector<vector<int>> TabuSearch::get_insertion_neighbourhood(const vector<int> &solution) {
     vector<vector<int>> neighbours;
-    for (size_t i = 1; i < solution.size() - 1; ++i) {
-        for (size_t j = 1; j < solution.size() - 1; ++j) {
+    for (int i = 1; i < solution.size() - 1; ++i) {
+        for (int j = 1; j < solution.size() - 1; ++j) {
             if (i != j) {
                 vector<int> neighbour = solution;
                 int removed_city = neighbour[i];
@@ -129,8 +143,8 @@ vector<vector<int>> TabuSearch::get_insertion_neighbourhood(vector<int> solution
     return neighbours;
 }
 
-vector<int> TabuSearch::diversify_solution(vector<int> current_solution) {
-    int number_of_cities = current_solution.size();
+vector<int> TabuSearch::hard_reset(vector<int> current_solution) {
+    int number_of_cities = int(current_solution.size());
     int number_of_changes = std::max(1, int(number_of_cities * 0.05));
 
     for (int i = 0; i < number_of_changes; ++i) {
@@ -145,4 +159,54 @@ vector<int> TabuSearch::diversify_solution(vector<int> current_solution) {
     }
 
     return current_solution;
+}
+
+vector<int> TabuSearch::diversify_solution(vector<int> current_solution) {
+    current_solution.pop_back();
+    current_solution.erase(current_solution.begin());
+    int number_of_cities = int(current_solution.size());
+    int segment_size = max(2, number_of_cities / 5);  // Example segmentation
+
+    // Segment the solution
+    vector<vector<int>> segments;
+    for (int i = 0; i < number_of_cities; i += segment_size) {
+        int end = min(i + segment_size, number_of_cities);
+        vector<int> segment(current_solution.begin() + i, current_solution.begin() + end);
+        segments.push_back(segment);
+    }
+
+    shuffle(segments.begin(), segments.end(), std::mt19937(std::random_device()()));
+
+    vector<int> new_solution;
+    new_solution.push_back(0);
+    for (auto &segment: segments) {
+        new_solution.insert(new_solution.end(), segment.begin(), segment.end());
+    }
+    new_solution.push_back(0);
+
+    // Optional: Apply a local optimization method here
+    // new_solution = local_optimization(new_solution);
+
+    return new_solution;
+}
+
+
+vector<int> TabuSearch::two_opt_improvement(const vector<int> &route) {
+    bool improvement = true;
+    auto best_route = route;
+    while (improvement) {
+        improvement = false;
+        for (int i = 0; i < best_route.size() - 1; i++) {
+            for (int k = i + 1; k < best_route.size(); k++) {
+                auto new_route = best_route;
+                reverse(new_route.begin() + i, new_route.begin() + k + 1); // Reversing the segment
+
+                if (calculate_path_cost(new_route) < calculate_path_cost(best_route)) {
+                    best_route = new_route;
+                    improvement = true;
+                }
+            }
+        }
+    }
+    return best_route;
 }

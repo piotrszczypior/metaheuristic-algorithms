@@ -12,7 +12,7 @@ using namespace std;
 class TabuSearch {
 private:
     int TABU_MAX_SIZE;
-    int MAX_ITERATIONS_WITHOUT_IMPROVEMENT;
+    int MAX_ITERATIONS_WITHOUT_IMPROVEMENT{};
     vector<vector<int>> graph;
     vector<vector<int>> long_term_memory;
 
@@ -23,15 +23,19 @@ public:
 
     int calculate_path_cost(vector<int> solution);
 
-    vector<vector<int>> get_neighbourhood_solutions(vector<int> solution);
+    static vector<vector<int>> get_neighbourhood_solutions(const vector<int>& solution);
 
     vector<vector<int>> get_inversion_neighbourhood(vector<int> solution);
 
-    vector<vector<int>> get_insertion_neighbourhood(vector<int> solution);
+    static vector<vector<int>> get_insertion_neighbourhood(const vector<int>& solution);
 
-    size_t random_int(int minimum, int maximum);
+    static size_t random_int(int minimum, int maximum);
 
-    vector<int> diversify_solution(vector<int> current_solution);
+    static vector<int> diversify_solution(vector<int> current_solution);
+
+    vector<int> two_opt_improvement(const vector<int> &route);
+
+    static vector<int> hard_reset(vector<int> current_solution);
 };
 
 
