@@ -74,7 +74,6 @@ T *FileReader::read_problem_from_tsp_file(std::string file_path) {
 
 template<class T>
 T *FileReader::read_problem_from_xml_file(std::string file_path) {
-    // TODO:
     std::ifstream file(file_path);
     std::string line;
     std::regex edge_pattern(R"(<edge cost="([0-9.e+0-9]+)\">([0-9]+)<\/edge>)");

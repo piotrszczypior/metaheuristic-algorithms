@@ -29,4 +29,4 @@ add_executable(meta-heuristic-algorithms
         src/algorithms/neighbour/service/AbstractNeighbourService.h
         src/algorithms/neighbour/service/SwapNeighbourService.h
         src/algorithms/neighbour/service/InsertNeighbourService.h
-        src/algorithms/neighbour/service/InverseNeighbourService.h)
+        src/algorithms/neighbour/service/InverseNeighbourService.h src/algorithms/neighbour/NeighbourhoodType.h)

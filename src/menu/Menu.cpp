@@ -5,6 +5,7 @@
 #include "../file-writer/FileWriter.h"
 #include "../algorithms/simulated-annealing/SimulatedAnnealing.h"
 #include "../algorithms/tabuSearch/TabuSearch.h"
+#include "../algorithms/neighbour/NeighbourhoodType.h"
 #include <iostream>
 
 using namespace std;
@@ -18,7 +19,7 @@ void menu::create_menu() {
 
     vector<int> solution;
 
-    string neighbourhood;
+    NeighbourType neighbourhood;
     double temperature_coefficient;
 
     string buffer;
@@ -33,7 +34,7 @@ void menu::create_menu() {
                 cout << "Enter file path: ";
                 cin >> buffer;
                 delete graph;
-                graph = fileReader.read_problem_from_tsp_file<Graph>(buffer);
+                graph = fileReader.read_problem_from_xml_file<Graph>(buffer);
 
                 if (graph == nullptr) {
                     cout << "Reading from file was unsuccessful. Please try again..." << endl;
@@ -55,6 +56,7 @@ void menu::create_menu() {
             case 3: {
                 cout << "Enter stopping condition (time limit in seconds): ";
                 stopping_condition = utils::get_input();
+                break;
             }
             case 4: {
                 cout << "Choose neighbourhood: " << endl;
@@ -66,19 +68,19 @@ void menu::create_menu() {
 
                 switch (neighbourhood_choice) {
                     case 1: {
-                        neighbourhood = "swap";
+                        neighbourhood = NeighbourType::Swap;
                         break;
                     }
                     case 2: {
-                        neighbourhood = "insert";
+                        neighbourhood = NeighbourType::Insert;
                         break;
                     }
                     case 3: {
-                        neighbourhood = "invert";
+                        neighbourhood = NeighbourType::Insert;
                         break;
                     }
                     default: {
-                        neighbourhood = "";
+                        neighbourhood = NeighbourType::Swap;
                     }
                 }
                 break;
@@ -96,8 +98,8 @@ void menu::create_menu() {
                     break;
                 }
                 cout << "Algorithm - Tabu Search" << endl;
-                TabuSearch tabuSearch = {graph, 3 * 170};
-                auto result = tabuSearch.process(stopping_condition);
+                TabuSearch tabuSearch = {graph, 3 * graph->get_city_number()};
+                auto result = tabuSearch.process(stopping_condition, neighbourhood);
                 solution = result.best_path;
                 cout << "Algorithm results: " << endl;
                 print_result(result.greedy_cost, result.best_cost, result.best_path);
@@ -115,7 +117,7 @@ void menu::create_menu() {
                 SimulatedAnnealing simulatedAnnealing = {graph, temperature_coefficient};
                 auto result = simulatedAnnealing.process(stopping_condition, 1000);
                 solution = result.best_path;
-                print_result(0, result.best_cost, result.best_path);
+                print_result(result.greedy_cost, result.best_cost, result.best_path);
                 utils::press_key_to_continue();
                 break;
             }
@@ -146,7 +148,7 @@ void menu::print_options() {
     cout << "================================" << std::endl;
     cout << "Travelling Salesman Problem Menu" << std::endl;
     cout << "================================ " << std::endl;
-    cout << "1. Read from file" << std::endl;
+    cout << "1. Read from XML file" << std::endl;
     cout << "2. Display problem as adjacency matrix graph representation" << std::endl;
     cout << "3. Enter time limit (time stopping condition)" << std::endl;
     cout << "4. Choose neighborhood for Tabu Search Algorithm" << std::endl;

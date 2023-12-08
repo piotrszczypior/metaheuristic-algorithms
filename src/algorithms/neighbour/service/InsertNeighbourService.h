@@ -1,26 +1,29 @@
-#ifndef META_HEURISTIC_ALGORITHMS_SWAPNEIGHBOURSERVICE_H
-#define META_HEURISTIC_ALGORITHMS_SWAPNEIGHBOURSERVICE_H
+#ifndef META_HEURISTIC_ALGORITHMS_INSERTNEIGHBOURSERVICE_H
+#define META_HEURISTIC_ALGORITHMS_INSERTNEIGHBOURSERVICE_H
 
 #include <vector>
 #include "AbstractNeighbourService.h"
 
 class InsertNeighbourService : public AbstractNeighbourService {
 
-    std::vector<int> get_neighbourhood(std::vector<int> solution) override;
+    std::vector<std::vector<int>> get_neighbourhood(std::vector<int> solution) override;
 };
 
-std::vector<int> InsertNeighbourService::get_neighbourhood(std::vector<int> solution) {
-    int problem_size = int(solution.size());
-    auto position_to_remove = random_int(1, problem_size - 2);
-    auto selected_city = solution[position_to_remove];
-    solution.erase(solution.begin() + position_to_remove);
-    auto position_to_insert = random_int(1, problem_size - 2);
-    while (position_to_remove == position_to_insert) {
-        position_to_insert = random_int(1, problem_size - 2);
+std::vector<std::vector<int>> InsertNeighbourService::get_neighbourhood(std::vector<int> solution) {
+    std::vector<std::vector<int>> neighbours;
+    for (int i = 1; i < solution.size() - 1; ++i) {
+        for (int j = 1; j < solution.size() - 1; ++j) {
+            if (i != j) {
+                std::vector<int> neighbour = solution;
+                int removed_city = neighbour[i];
+                neighbour.erase(neighbour.begin() + i);
+                neighbour.insert(neighbour.begin() + j, removed_city);
+                neighbours.push_back(neighbour);
+            }
+        }
     }
-    solution.insert(solution.begin() + position_to_insert, selected_city);
-    return solution;
+    return neighbours;
 }
 
 
-#endif //META_HEURISTIC_ALGORITHMS_SWAPNEIGHBOURSERVICE_H
+#endif //META_HEURISTIC_ALGORITHMS_INSERTNEIGHBOURSERVICE_H

@@ -10,13 +10,11 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, d
     NearestNeighbour nearestNeighbour = {};
     auto nearestNeighbourSolution = nearestNeighbour.find_solution(graph);
     auto best_cost = nearestNeighbourSolution.first;
-    auto greedy_cost = best_cost;
     auto best_path = nearestNeighbourSolution.second;
-    auto greedy_path = best_path;
     auto current_path = best_path;
     problem_size = int(best_path.size());
 
-//    temperature = calculate_initial_temperature();
+    temperature = calculate_initial_temperature();
 
     auto start_time = std::chrono::high_resolution_clock::now();
     std::chrono::seconds duration(time_stop_criteria);
@@ -36,15 +34,9 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, d
 
         temperature *= COOLING_RATE;
     }
-// 2023.1.4
-//    cout << "Move insert: " << move_insert << endl;
-//    cout << "Move swap: " << move_swap << endl;
-//    cout << "Move inverse: " << move_inverse << endl;
-//
-//    cout << "value of expression: " << exp(-1/temperature) << endl;
-//    cout << "Temperature: " << temperature << endl;
-
-    return {greedy_cost, greedy_path, best_cost, best_path};
+    cout << "value of expression: " << double(exp(-1.000 / temperature)) << endl;
+    cout << "Temperature: " << to_string(temperature) << endl;
+    return {nearestNeighbourSolution.first, nearestNeighbourSolution.second, best_cost, best_path};
 }
 
 SimulatedAnnealing::SimulatedAnnealing(Graph *graph, double cooling_rate) {
@@ -88,23 +80,6 @@ void SimulatedAnnealing::make_swap_cities_move(vector<int> &neighbour) {
     swap(neighbour[first_position], neighbour[second_position]);
 }
 
-void SimulatedAnnealing::make_swap_route_parts_move(vector<int> &neighbour) {
-    auto first_position = random_int(1, problem_size - 2);
-    auto second_position = random_int(1, problem_size - 2);
-
-    auto begin_positions_iterator = neighbour.begin() + min(first_position, second_position);
-    auto end_positions_iterator = neighbour.begin() + max(first_position, second_position);
-    auto sub_route = vector<int>(begin_positions_iterator, end_positions_iterator);
-    neighbour.erase(begin_positions_iterator, end_positions_iterator);
-
-    auto new_size = int(neighbour.size());
-    auto new_position_of_route_part = random_int(1, new_size - 1);
-
-    for (auto city: sub_route) {
-        neighbour.insert(neighbour.begin() + new_position_of_route_part++, city);
-    }
-}
-
 void SimulatedAnnealing::make_inverse_move(vector<int> &neighbour) {
     auto first_index = random_int(1, problem_size - 2);
     auto second_index = random_int(1, problem_size - 2);
@@ -145,34 +120,35 @@ int SimulatedAnnealing::calculate_path_cost(const vector<int> &solution) {
     return cost;
 }
 
-//double SimulatedAnnealing::calculate_initial_temperature() {
-//    const int SAMPLE_NUMBER = 10000;
-//    vector<double> deltas;
-//    deltas.reserve(SAMPLE_NUMBER);
-//
-//    for (int i = 0; i < SAMPLE_NUMBER; ++i) {
-//        auto solution = generate_random_solution();
-//        auto neighbour = get_neighbours(solution);
-//        auto current_cost = calculate_path_cost(solution);
-//        auto neighbour_cost = calculate_path_cost(neighbour);
-//        deltas.push_back(abs(current_cost - neighbour_cost));
-//    }
-//
-//    double mean_delta = std::accumulate(deltas.begin(), deltas.end(), 0.0) / deltas.size();
-//
-//    const double P = 0.95;
-//    double initial_temperature = -mean_delta / log(P);
-//
-//    cout << "INIT TEMP: " << initial_temperature << endl;
-//    return initial_temperature;
-//}
-//
-//vector<int> SimulatedAnnealing::generate_random_solution() {
-//    vector<int> solution(graph.size() + 1);
-//    iota(solution.begin(), solution.end() - 1, 0);
-//    solution.push_back(0);
-//    shuffle(solution.begin() + 1, solution.end() - 1, generator);
-//
-//    return solution;
-//}
+double SimulatedAnnealing::calculate_initial_temperature() {
+    const int SAMPLE_NUMBER = 10000;
+    vector<double> deltas;
+    deltas.reserve(SAMPLE_NUMBER);
+
+    for (int i = 0; i < SAMPLE_NUMBER; ++i) {
+        auto solution = generate_random_solution();
+        auto neighbour = get_neighbours(solution);
+        auto current_cost = calculate_path_cost(solution);
+        auto neighbour_cost = calculate_path_cost(neighbour);
+        deltas.push_back(abs(current_cost - neighbour_cost));
+    }
+
+    std::nth_element(deltas.begin(), deltas.begin() + deltas.size() / 2, deltas.end());
+    double median_delta = deltas[deltas.size() / 2];
+
+    const double P = 0.85;
+    double initial_temperature = -median_delta / log(P);
+
+    cout << "Initial temperature: " << initial_temperature << endl;
+    return initial_temperature;
+}
+
+vector<int> SimulatedAnnealing::generate_random_solution() {
+    vector<int> solution(graph.size() + 1);
+    iota(solution.begin(), solution.end() - 1, 0);
+    solution.push_back(0);
+    shuffle(solution.begin() + 1, solution.end() - 1, generator);
+
+    return solution;
+}
 
