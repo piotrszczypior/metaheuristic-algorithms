@@ -9,8 +9,12 @@ using namespace std;
 class TabuSearchResultTO {
 
 public:
-    TabuSearchResultTO(int greedyCost, const vector<int> &greedySolution, int bestCost, const vector<int> &bestPath)
-            : greedy_cost(greedyCost), greedy_solution(greedySolution), best_cost(bestCost), best_path(bestPath) {}
+    TabuSearchResultTO(long long findTime, int greedyCost, const vector<int> &greedySolution, int bestCost,
+                       const vector<int> &bestPath) : findTime(findTime), greedy_cost(greedyCost),
+                                                      greedy_solution(greedySolution), best_cost(bestCost),
+                                                      best_path(bestPath) {}
+
+    long long findTime;
 
     int greedy_cost;
     vector<int> greedy_solution;

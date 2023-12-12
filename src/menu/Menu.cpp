@@ -3,9 +3,9 @@
 #include "../graph/Graph.h"
 #include "Utils.h"
 #include "../file-writer/FileWriter.h"
-#include "../algorithms/simulated-annealing/SimulatedAnnealing.h"
+#include "../algorithms/simulatedAnnealing/SimulatedAnnealing.h"
 #include "../algorithms/tabuSearch/TabuSearch.h"
-#include "../algorithms/neighbour/NeighbourhoodType.h"
+#include "../algorithms/tabuSearch/neighbour/NeighbourhoodType.h"
 #include <iostream>
 
 using namespace std;
@@ -19,7 +19,7 @@ void menu::create_menu() {
 
     vector<int> solution;
 
-    NeighbourType neighbourhood;
+    NeighbourhoodType neighbourhood;
     double temperature_coefficient;
 
     string buffer;
@@ -68,19 +68,19 @@ void menu::create_menu() {
 
                 switch (neighbourhood_choice) {
                     case 1: {
-                        neighbourhood = NeighbourType::Swap;
+                        neighbourhood = NeighbourhoodType::Swap;
                         break;
                     }
                     case 2: {
-                        neighbourhood = NeighbourType::Insert;
+                        neighbourhood = NeighbourhoodType::Insert;
                         break;
                     }
                     case 3: {
-                        neighbourhood = NeighbourType::Insert;
+                        neighbourhood = NeighbourhoodType::Insert;
                         break;
                     }
                     default: {
-                        neighbourhood = NeighbourType::Swap;
+                        neighbourhood = NeighbourhoodType::Swap;
                     }
                 }
                 break;
@@ -115,7 +115,7 @@ void menu::create_menu() {
                 }
                 cout << "Algorithm - Simulated Annealing" << endl;
                 SimulatedAnnealing simulatedAnnealing = {graph, temperature_coefficient};
-                auto result = simulatedAnnealing.process(stopping_condition, 1000);
+                auto result = simulatedAnnealing.process(stopping_condition);
                 solution = result.best_path;
                 print_result(result.greedy_cost, result.best_cost, result.best_path);
                 utils::press_key_to_continue();

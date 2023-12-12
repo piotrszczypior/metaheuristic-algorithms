@@ -19,14 +19,15 @@ add_executable(meta-heuristic-algorithms
         src/menu/Utils.cpp
         src/algorithms/tabuSearch/TabuSearch.h
         src/algorithms/tabuSearch/TabuSearch.cpp
-        src/algorithms/simulated-annealing/SimulatedAnnealing.h
-        src/algorithms/simulated-annealing/SimulatedAnnealing.cpp
+        src/algorithms/simulatedAnnealing/SimulatedAnnealing.h
+        src/algorithms/simulatedAnnealing/SimulatedAnnealing.cpp
         src/algorithms/tabuSearch/TabuSearchResultTO.h
-        src/algorithms/simulated-annealing/SimulatedAnnealingResultTO.h
+        src/algorithms/simulatedAnnealing/SimulatedAnnealingResultTO.h
         src/algorithms/nearestNeighbour/NearestNeighbour.cpp
         src/algorithms/nearestNeighbour/NearestNeighbour.h
-        src/algorithms/neighbour/NeighbourServiceFactory.h
-        src/algorithms/neighbour/service/AbstractNeighbourService.h
-        src/algorithms/neighbour/service/SwapNeighbourService.h
-        src/algorithms/neighbour/service/InsertNeighbourService.h
-        src/algorithms/neighbour/service/InverseNeighbourService.h src/algorithms/neighbour/NeighbourhoodType.h)
+        src/algorithms/tabuSearch/neighbour/NeighbourServiceFactory.h
+        src/algorithms/tabuSearch/neighbour/service/AbstractNeighbourService.h
+        src/algorithms/tabuSearch/neighbour/service/SwapNeighbourService.h
+        src/algorithms/tabuSearch/neighbour/service/InsertNeighbourService.h
+        src/algorithms/tabuSearch/neighbour/service/InverseNeighbourService.h
+        src/algorithms/tabuSearch/neighbour/NeighbourhoodType.h src/algorithms/simulatedAnnealing/cooling/services/AbstractCoolingDiagram.h src/algorithms/simulatedAnnealing/cooling/services/ExponentialCoolingDiagram.h src/algorithms/simulatedAnnealing/cooling/services/GeometricCoolingDiagram.h src/algorithms/simulatedAnnealing/cooling/services/LinearCoolingDiagram.h src/algorithms/simulatedAnnealing/cooling/CoolingDiagramServiceFactory.h src/algorithms/simulatedAnnealing/cooling/CoolingDiagramType.h)
