@@ -23,16 +23,18 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria) {
     auto time = std::chrono::high_resolution_clock::now();
     auto best_path_time = start_time;
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
-        auto neighbour = get_neighbours(current_path);
-        auto neighbour_cost = calculate_path_cost(neighbour);
+        for (int i = 0; i < 3; ++i) {
+            auto neighbour = get_neighbours(current_path);
+            auto neighbour_cost = calculate_path_cost(neighbour);
 
-        if (accept_move(best_cost, neighbour_cost, temperature)) {
-            current_path = neighbour;
+            if (accept_move(best_cost, neighbour_cost, temperature)) {
+                current_path = neighbour;
 
-            if (neighbour_cost < best_cost) {
-                best_path_time = std::chrono::high_resolution_clock::now();
-                best_path = neighbour;
-                best_cost = neighbour_cost;
+                if (neighbour_cost < best_cost) {
+                    best_path_time = std::chrono::high_resolution_clock::now();
+                    best_path = neighbour;
+                    best_cost = neighbour_cost;
+                }
             }
         }
 //        temperature = coolingDiagram->calculate_temperature(COOLING_RATE, temperature, interation_number);

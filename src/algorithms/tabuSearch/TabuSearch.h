@@ -34,6 +34,10 @@ public:
     TabuSearch(Graph *graph, int max_tabu_size);
 
     TabuSearchResultTO process(int time_stop_criteria, NeighbourhoodType type);
+
+    vector<vector<int>> get_neighbourhood(vector<int> solution);
+
+    int random_int(int i, unsigned long long int i1);
 };
 
 

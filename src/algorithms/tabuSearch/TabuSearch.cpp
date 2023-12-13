@@ -12,9 +12,9 @@ TabuSearch::TabuSearch(Graph *graph, int max_tabu_size) {
 }
 
 TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType type) {
-    list<vector<int>> tabu_list;
+    vector<vector<int>> tabu_list;
 //    std::list<Edge> tabu_list;
-    MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.05);
+    MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.6);
     int hard_reset_max_iteration = 0;
 
     int iterations_without_improvement = 0;
@@ -36,7 +36,6 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType
     auto best_path_time = start_time;
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
         vector<vector<int>> neighbourhood_solutions = neighbour_service->get_neighbourhood(best_neighbour);
-
         int best_neighbour_cost = numeric_limits<int>::max();
         // get candidate neighbours excluding tabu
         for (const auto &candidate_solution: neighbourhood_solutions) {
@@ -50,16 +49,12 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType
                 }
             }
         }
-        cout << best_neighbour_cost << endl;
 
         // check if greedy_solution is better
         if (best_neighbour_cost < current_best_cost) {
             best_path_time = std::chrono::high_resolution_clock::now();
             current_best_path = best_neighbour;
             current_best_cost = best_neighbour_cost;
-            iterations_without_improvement = 0;
-            hard_reset_max_iteration = 0;
-            reset_iterations = 0;
         } else {
             iterations_without_improvement++;
             hard_reset_max_iteration++;
@@ -71,14 +66,14 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType
             iterations_without_improvement = 0;
         }
 
-        if (hard_reset_max_iteration >= int(graph.size() * 0.35)) {
+        if (hard_reset_max_iteration >= int(graph.size())) {
             best_neighbour = hard_reset(best_neighbour);
             hard_reset_max_iteration = 0;
         }
 
-        if(reset_iterations >= int(graph.size()) * 0.5) {
-            best_neighbour = generate_random_solution();
-        }
+//        if(reset_iterations >= int(graph.size()) * 0.5) {
+//            best_neighbour = generate_random_solution();
+//        }
 
         // update Tabu list
         tabu_list.push_back(best_neighbour);
@@ -86,7 +81,7 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType
             tabu_list.erase(tabu_list.begin());
         }
     }
-    auto total_time = std::chrono::duration_cast<std::chrono::seconds>(best_path_time - start_time).count();
+    auto total_time = std::chrono::duration<double>(best_path_time - start_time).count();
     delete neighbour_service;
     return {total_time, greedy_solution.first, greedy_solution.second, current_best_cost,
             current_best_path};
@@ -109,7 +104,7 @@ vector<int> TabuSearch::diversify_solution(vector<int> current_solution) {
     current_solution.pop_back();
     current_solution.erase(current_solution.begin());
     int number_of_cities = int(current_solution.size());
-    int segment_size = max(2, number_of_cities / 6);
+    int segment_size = max(2, number_of_cities / 5);
 
     // Segment the solution
     vector<vector<int>> segments;
@@ -159,4 +154,19 @@ vector<int> TabuSearch::generate_random_solution() {
     shuffle(solution.begin() + 1, solution.end() - 1, generator);
 
     return solution;
+}
+
+vector<vector<int>> TabuSearch::get_neighbourhood(vector<int> solution) {
+    int number_of_cities = int(solution.size());
+    std::vector<std::vector<int>> neighbors;
+    for (int i = 1; i < number_of_cities - 1; ++i) {
+        for (int j = 1; j < number_of_cities - 1; ++j) {
+            if (i != j) {
+                std::vector<int> neighbor = solution;
+                std::swap(neighbor[i], neighbor[j]);
+                neighbors.push_back(neighbor);
+            }
+        }
+    }
+    return neighbors;
 }

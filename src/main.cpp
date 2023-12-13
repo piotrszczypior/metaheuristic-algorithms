@@ -9,6 +9,8 @@
 using namespace std;
 
 void test(char *argv[]);
+void test_chart(char *argv[]);
+void test_chart_sa(char *argv[]);
 
 void test_sa(char *argv[]);
 
@@ -17,14 +19,15 @@ int main(int argc, char *argv[]) {
 //
 //    TabuSearch tabu{graph_xml, graph_xml->get_city_number()};
 //    auto result = tabu.process(120, NeighbourhoodType::Swap);
-//    auto graph_xml = FileReader().read_problem_from_xml_file<Graph>("../ftv55.xml");
+//    auto graph_xml = FileReader().read_problem_from_xml_file<Graph>("../rbg358.xml");
 //
-//    TabuSearch tabu{graph_xml, 5 * graph_xml->get_city_number()};
-//    auto result = tabu.process(120, NeighbourhoodType::Swap);
+//    TabuSearch tabu{graph_xml, 3 * graph_xml->get_city_number()};
+//    auto result = tabu.process(360, NeighbourhoodType::Swap);
 //    cout << result.best_cost << "," << result.findTime;
 
-//    test(argv);
-    test_sa(argv);
+    test(argv);
+//    test_sa(argv);
+//    test_chart(argv);
 //    menu::create_menu();
 //    FileReader filereader = FileReader();
 //    auto graph_xml = filereader.read_problem_from_tsp_file<Graph>(R"(../src/ftv170.atsp)");
@@ -40,7 +43,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-static std::map<std::string, NeighbourhoodType> const table = {{"swap",   NeighbourhoodType::Swap},
+static std::map<std::string, NeighbourhoodType> const table = {{"Swap",   NeighbourhoodType::Swap},
                                                                {"Insert", NeighbourhoodType::Insert},
                                                                {"Invert", NeighbourhoodType::Invert}};
 
@@ -61,4 +64,21 @@ void test_sa(char *argv[]) {
     auto result = sa.process(stoi(argv[2]));
     cout << result.best_cost << "," << result.total_time;
     delete graph_xml;
+}
+
+// [1] file, [2] time [3] neighbour
+void test_chart(char *argv[]) {
+    auto graph_xml = FileReader().read_problem_from_xml_file<Graph>(argv[1]);
+
+    TabuSearch tabu{graph_xml, graph_xml->get_city_number()};
+    auto result = tabu.process(stoi(argv[2]), table.find(argv[3])->second);
+    cout << result.best_cost;
+}
+
+void test_chart_sa(char *argv[]) {
+    auto graph_xml = FileReader().read_problem_from_xml_file<Graph>(argv[1]);
+
+    SimulatedAnnealing sa{graph_xml, stod(argv[3])};
+    auto result = sa.process(stoi(argv[2]));
+    cout << result.best_cost;
 }
