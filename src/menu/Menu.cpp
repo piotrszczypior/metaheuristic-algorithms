@@ -5,7 +5,6 @@
 #include "../file-writer/FileWriter.h"
 #include "../algorithms/simulatedAnnealing/SimulatedAnnealing.h"
 #include "../algorithms/tabuSearch/TabuSearch.h"
-#include "../algorithms/tabuSearch/neighbour/NeighbourhoodType.h"
 #include <iostream>
 
 using namespace std;
@@ -44,7 +43,7 @@ void menu::create_menu() {
             }
             case 2: {
                 if (graph == nullptr) {
-                    cout << "Operation unsuccessful. Generate or read problem from file first." << endl;
+                    cout << "Operation unsuccessful. Read problem from file first." << endl;
                     utils::press_key_to_continue();
                     break;
                 }
@@ -93,7 +92,7 @@ void menu::create_menu() {
             }
             case 6: {
                 if (graph == nullptr) {
-                    cout << "Operation unsuccessful. Generate or read problem from file first." << endl;
+                    cout << "Operation unsuccessful. Read problem from file first." << endl;
                     utils::press_key_to_continue();
                     break;
                 }
@@ -109,15 +108,46 @@ void menu::create_menu() {
             }
             case 7: {
                 if (graph == nullptr) {
-                    cout << "Operation unsuccessful. Generate or read problem from file first." << endl;
+                    cout << "Operation unsuccessful. Read problem from file first." << endl;
                     utils::press_key_to_continue();
                     break;
                 }
+                CoolingDiagramType type;
+
+                cout << "Select cooling diagram" << endl;
+                cout << "1. Geometric" << endl;
+                cout << "2. Linear" << endl;
+                cout << "3. Exponential" << endl;
+                cout << "Choice: ";
+
+                int cooling_choice = utils::get_input();
+
+                switch (cooling_choice) {
+                    case 1: {
+                        type = CoolingDiagramType::GEOMETRIC;
+                        break;
+                    }
+                    case 2: {
+                        type = CoolingDiagramType::LINEAR;
+                        break;
+                    }
+                    case 3: {
+                        type = CoolingDiagramType::EXPONENTIAL;
+                        break;
+                    }
+                    default: {
+                        type = CoolingDiagramType::GEOMETRIC;
+                    }
+                }
+
                 cout << "Algorithm - Simulated Annealing" << endl;
                 SimulatedAnnealing simulatedAnnealing = {graph, temperature_coefficient};
-                auto result = simulatedAnnealing.process(stopping_condition);
+                auto result = simulatedAnnealing.process(stopping_condition, type);
                 solution = result.best_path;
                 print_result(result.greedy_cost, result.best_cost, result.best_path);
+                cout << "Temperature K " << result.temperature << endl;
+                cout << "Value of expression: " << exp(-1.00/result.temperature) << endl;
+
                 utils::press_key_to_continue();
                 break;
             }
@@ -128,7 +158,22 @@ void menu::create_menu() {
                 break;
             }
             case 9: {
-                // TODO: Read solution from file
+                cout << "Enter file name: ";
+                cin >> buffer;
+
+                auto path = fileReader.read_path_from_txt_file(buffer);
+                if(graph == nullptr) {
+                    cout << "Operation unsuccessful. Read problem from file first." << endl;
+                    break;
+                }
+
+                auto graph_as_vector = graph->get_graph_as_vector();
+                auto cost = 0;
+                for (int i = 0; i < graph_as_vector.size(); ++i) {
+                    cost += graph_as_vector[path[i]][path[i+1]];
+                }
+                cout << "Cost of entered path: " << cost << endl;
+                utils::press_key_to_continue();
                 break;
             }
             case 10: {

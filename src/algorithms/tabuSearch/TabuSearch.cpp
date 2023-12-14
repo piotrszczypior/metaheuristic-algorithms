@@ -12,8 +12,7 @@ TabuSearch::TabuSearch(Graph *graph, int max_tabu_size) {
 }
 
 TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType type) {
-    vector<vector<int>> tabu_list;
-//    std::list<Edge> tabu_list;
+    list<vector<int>> tabu_list;
     MAX_ITERATIONS_WITHOUT_IMPROVEMENT = int(graph.size() * 0.6);
     int hard_reset_max_iteration = 0;
 
@@ -70,10 +69,6 @@ TabuSearchResultTO TabuSearch::process(int time_stop_criteria, NeighbourhoodType
             best_neighbour = hard_reset(best_neighbour);
             hard_reset_max_iteration = 0;
         }
-
-//        if(reset_iterations >= int(graph.size()) * 0.5) {
-//            best_neighbour = generate_random_solution();
-//        }
 
         // update Tabu list
         tabu_list.push_back(best_neighbour);
@@ -147,26 +142,3 @@ vector<int> TabuSearch::two_opt_improvement(const vector<int> &route) {
     return best_route;
 }
 
-vector<int> TabuSearch::generate_random_solution() {
-    vector<int> solution(graph.size() + 1);
-    iota(solution.begin(), solution.end() - 1, 0);
-    solution.push_back(0);
-    shuffle(solution.begin() + 1, solution.end() - 1, generator);
-
-    return solution;
-}
-
-vector<vector<int>> TabuSearch::get_neighbourhood(vector<int> solution) {
-    int number_of_cities = int(solution.size());
-    std::vector<std::vector<int>> neighbors;
-    for (int i = 1; i < number_of_cities - 1; ++i) {
-        for (int j = 1; j < number_of_cities - 1; ++j) {
-            if (i != j) {
-                std::vector<int> neighbor = solution;
-                std::swap(neighbor[i], neighbor[j]);
-                neighbors.push_back(neighbor);
-            }
-        }
-    }
-    return neighbors;
-}

@@ -6,8 +6,7 @@
 
 class FileReader {
 public:
-    template<class T>
-    T *read_problem_from_txt_file(std::string file_path);
+    std::vector<int> read_path_from_txt_file(std::string file_path);
 
     template<class T>
     T *read_problem_from_xml_file(std::string file_path);

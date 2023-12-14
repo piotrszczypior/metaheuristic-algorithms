@@ -6,6 +6,7 @@
 
 #include "SimulatedAnnealingResultTO.h"
 #include "../../graph/Graph.h"
+#include "cooling/CoolingDiagramType.h"
 #include <random>
 
 class SimulatedAnnealing {
@@ -35,7 +36,7 @@ public:
 
     SimulatedAnnealing(Graph *graph, double cooling_rate);
 
-    SimulatedAnnealingResultTO process(int time_stop_criteria);
+    SimulatedAnnealingResultTO process(int time_stop_criteria, CoolingDiagramType type);
 
     vector<int> generate_random_solution();
 };

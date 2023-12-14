@@ -7,7 +7,7 @@
 
 using namespace std;
 
-SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria) {
+SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria, CoolingDiagramType type) {
     NearestNeighbour nearestNeighbour = {};
     auto nearestNeighbourSolution = nearestNeighbour.find_solution(graph);
     auto best_cost = nearestNeighbourSolution.first;
@@ -15,15 +15,20 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria) {
     auto current_path = best_path;
     problem_size = int(best_path.size());
     double temperature = calculate_initial_temperature();
-    auto interation_number = 0;
-    auto coolingDiagram = CoolingDiagramServiceFactory().create_neighbourhood_service(CoolingDiagramType::GEOMETRIC);
+    auto iteration_number = 0;
+    auto coolingDiagram = CoolingDiagramServiceFactory::create_neighbourhood_service(CoolingDiagramType::GEOMETRIC);
+
+
+    //TODO: zu entfernen
+    vector<pair<double, int>> test_result;
+    test_result.emplace_back(0.0, best_cost);
 
     auto start_time = std::chrono::high_resolution_clock::now();
     std::chrono::seconds duration(time_stop_criteria);
     auto time = std::chrono::high_resolution_clock::now();
     auto best_path_time = start_time;
     while (std::chrono::high_resolution_clock::now() - start_time < duration) {
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 5; ++i) {
             auto neighbour = get_neighbours(current_path);
             auto neighbour_cost = calculate_path_cost(neighbour);
 
@@ -31,22 +36,23 @@ SimulatedAnnealingResultTO SimulatedAnnealing::process(int time_stop_criteria) {
                 current_path = neighbour;
 
                 if (neighbour_cost < best_cost) {
-                    best_path_time = std::chrono::high_resolution_clock::now();
                     best_path = neighbour;
                     best_cost = neighbour_cost;
+                    auto measure_time = std::chrono::duration<double>(
+                            std::chrono::high_resolution_clock::now() - start_time).count();
+                    test_result.emplace_back(measure_time, best_cost);
                 }
             }
-        }
-//        temperature = coolingDiagram->calculate_temperature(COOLING_RATE, temperature, interation_number);
-        temperature *= COOLING_RATE;
-//interation_number++;
 
+        }
+
+        temperature = coolingDiagram->calculate_temperature(COOLING_RATE, temperature, iteration_number);
+        iteration_number++;
     }
-//    cout << "value of expression: " << double(exp(-1.000 / temperature)) << endl;
-//    cout << "Temperature: " << to_string(temperature) << endl;
+
     auto total_time = std::chrono::duration<double>(best_path_time - start_time).count();
-//    cout << "Time to find the best path: " << total_time << " seconds" << endl;
-    return {total_time, nearestNeighbourSolution.first, nearestNeighbourSolution.second, best_cost, best_path};
+    return {test_result, total_time, nearestNeighbourSolution.first, nearestNeighbourSolution.second, best_cost,
+            best_path, temperature};
 }
 
 SimulatedAnnealing::SimulatedAnnealing(Graph *graph, double cooling_rate) {
@@ -143,7 +149,7 @@ double SimulatedAnnealing::calculate_initial_temperature() {
     std::nth_element(deltas.begin(), deltas.begin() + deltas.size() / 2, deltas.end());
     double median_delta = deltas[deltas.size() / 2];
 
-    const double P = 0.55;
+    const double P = 0.85;
     double initial_temperature = -median_delta / log(P);
 
 //    cout << "Initial temperature: " << initial_temperature << endl;
